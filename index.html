@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maansi A. Singh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #09090f;
+      --surface:   #111122;
+      --card:      #161628;
+      --border:    rgba(139, 92, 246, 0.18);
+      --purple:    #7c3aed;
+      --purple-lt: #a78bfa;
+      --blue:      #2563eb;
+      --blue-lt:   #60a5fa;
+      --green:     #059669;
+      --green-lt:  #34d399;
+      --teal:      #0891b2;
+      --text:      #e2e8f0;
+      --muted:     #94a3b8;
+      --dim:       #64748b;
+      --radius:    12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    /* ── AMBIENT GLOW ── */
+    .ambient {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.12;
+    }
+    .ambient-1 { width: 600px; height: 600px; background: var(--purple); top: -200px; left: -200px; }
+    .ambient-2 { width: 500px; height: 500px; background: var(--blue);   bottom: -150px; right: -150px; }
+    .ambient-3 { width: 400px; height: 400px; background: var(--green);  top: 40%; left: 40%; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(9, 9, 15, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--purple-lt), var(--blue-lt), var(--green-lt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .nav-links a:hover { color: var(--purple-lt); }
+
+    /* ── LAYOUT ── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 100px 2rem 6rem;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 3rem 0 5rem;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(124, 58, 237, 0.12);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--purple-lt);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green-lt);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.3); }
+    }
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff 0%, var(--purple-lt) 50%, var(--blue-lt) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--muted);
+      font-weight: 400;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── CONTACT BAR ── */
+    .contact-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .contact-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.45rem 1.1rem;
+      font-size: 0.82rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      font-weight: 500;
+    }
+    .contact-chip:hover {
+      border-color: var(--purple-lt);
+      background: rgba(124, 58, 237, 0.1);
+      transform: translateY(-2px);
+    }
+    .contact-chip svg { flex-shrink: 0; }
+    .contact-chip.github { border-color: rgba(96, 165, 250, 0.3); }
+    .contact-chip.github:hover { border-color: var(--blue-lt); background: rgba(37, 99, 235, 0.1); }
+    .contact-chip.linkedin { border-color: rgba(52, 211, 153, 0.3); }
+    .contact-chip.linkedin:hover { border-color: var(--green-lt); background: rgba(5, 150, 105, 0.1); }
+
+    /* ── SECTION ── */
+    section { margin-bottom: 4rem; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .section-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--purple-lt);
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s, transform 0.2s;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--purple), var(--blue));
+      border-radius: 4px 0 0 4px;
+    }
+    .card:hover {
+      border-color: rgba(139, 92, 246, 0.35);
+      transform: translateX(3px);
+    }
+    .card.green::before  { background: linear-gradient(180deg, var(--green), var(--teal)); }
+    .card.blue::before   { background: linear-gradient(180deg, var(--blue), var(--teal)); }
+    .card.project::before { background: linear-gradient(180deg, var(--purple), var(--green)); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.3rem;
+      flex-wrap: wrap;
+    }
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .card-role {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--purple-lt);
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+    }
+    .card-date {
+      font-size: 0.78rem;
+      color: var(--dim);
+      font-weight: 500;
+      white-space: nowrap;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+    }
+    .card-loc {
+      font-size: 0.8rem;
+      color: var(--dim);
+      margin-bottom: 0.75rem;
+    }
+
+    ul.bullets {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    ul.bullets li {
+      font-size: 0.88rem;
+      color: var(--muted);
+      padding-left: 1.1rem;
+      position: relative;
+      line-height: 1.55;
+    }
+    ul.bullets li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--purple-lt);
+      font-size: 0.7rem;
+      top: 0.15em;
+    }
+    ul.bullets li strong { color: var(--text); font-weight: 600; }
+    ul.bullets li em     { color: var(--green-lt); font-style: normal; font-weight: 500; }
+
+    /* ── SKILLS TAG ── */
+    .skills-line {
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.78rem;
+    }
+    .skills-line .label {
+      font-weight: 600;
+      color: var(--dim);
+      margin-right: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-size: 0.72rem;
+    }
+    .tag {
+      display: inline-block;
+      background: rgba(124, 58, 237, 0.12);
+      border: 1px solid rgba(124, 58, 237, 0.22);
+      color: var(--purple-lt);
+      border-radius: 5px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin: 0.15rem 0.2rem 0.15rem 0;
+    }
+    .tag.blue  { background: rgba(37,99,235,0.12); border-color: rgba(37,99,235,0.3); color: var(--blue-lt); }
+    .tag.green { background: rgba(5,150,105,0.12); border-color: rgba(5,150,105,0.3); color: var(--green-lt); }
+
+    /* ── EDUCATION ── */
+    .edu-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .edu-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(124,58,237,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .edu-degree {
+      font-size: 0.9rem;
+      color: var(--purple-lt);
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+    .courses-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--dim);
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+    .course-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .course-tag {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      border-radius: 5px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.75rem;
+    }
+
+    /* ── SKILLS GRID ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 600px) { .skills-grid { grid-template-columns: 1fr; } }
+    .skill-block {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+    }
+    .skill-block-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--dim);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── LEADERSHIP ── */
+    .leadership-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .leadership-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--green), var(--blue));
+      border-radius: 4px 0 0 4px;
+    }
+
+    /* ── SUB ROLE ── */
+    .sub-role {
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .sub-role-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .sub-role-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--blue-lt);
+      font-style: italic;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: var(--dim);
+      border-top: 1px solid var(--border);
+    }
+    footer span { color: var(--purple-lt); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero h1   { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient glows -->
+  <div class="ambient ambient-1"></div>
+  <div class="ambient ambient-2"></div>
+  <div class="ambient ambient-3"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-logo">Maansi A. Singh</div>
+    <div class="nav-links">
+      <a href="#education">Education</a>
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#leadership">Leadership</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ── HERO ── -->
+    <div class="hero reveal">
+      <div class="hero-badge"><span class="dot"></span>Open to Opportunities</div>
+      <h1>Maansi A. Singh</h1>
+      <p class="hero-sub">Computer Science &amp; Statistics · University of Illinois Urbana-Champaign</p>
+
+      <div class="contact-bar">
+        <a class="contact-chip" href="mailto:masingh2@illinois.edu">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/></svg>
+          masingh2@illinois.edu
+        </a>
+        <a class="contact-chip" href="tel:9713296681">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 3.09 5.18 2 2 0 0 1 5.07 3h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.71 2.81a2 2 0 0 1-.45 2.11L9.91 10.09a16 16 0 0 0 6 6l.45-.45a2 2 0 0 1 2.11-.45c.91.35 1.85.58 2.81.71A2 2 0 0 1 22 17.92z"/></svg>
+          (971) 329-6681
+        </a>
+        <a class="contact-chip github" href="https://github.com/maansisingh" target="_blank" rel="noopener">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          github.com/maansisingh
+        </a>
+        <a class="contact-chip linkedin" href="https://www.linkedin.com/in/maansiasingh" target="_blank" rel="noopener">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          linkedin.com/in/maansiasingh
+        </a>
+        <div class="contact-chip">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Champaign, IL
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EDUCATION ── -->
+    <section id="education" class="reveal">
+      <div class="section-header">
+        <div>
+          <div class="section-label">01 · Education</div>
+          <div class="section-title">Academic Background</div>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="edu-card">
+        <div class="card-header">
+          <div class="card-title">University of Illinois at Urbana-Champaign (UIUC)</div>
+          <div class="card-date">Aug 2024 – Present</div>
+        </div>
+        <div class="card-loc">Champaign, IL</div>
+        <div class="edu-degree">Bachelor of Science in Computer Science and Statistics</div>
+        <div class="courses-label">Key Courses</div>
+        <div class="course-tags">
+          <span class="course-tag">Intro to Programming I (Java)</span>
+          <span class="course-tag">Intro to Programming II (C++)</span>
+          <span class="course-tag">Data Structures (C++)</span>
+          <span class="course-tag">Intro to Algorithms</span>
+          <span class="course-tag">Computer Architecture</span>
+          <span class="course-tag">Discrete Structures</span>
+          <span class="course-tag">Linear Algebra with Computational Applications</span>
+          <span class="course-tag">Statistics / Probability I &amp; II</span>
+          <span class="course-tag">Intro to Data Science</span>
+          <span class="course-tag">Biostatistics</span>
+          <span class="course-tag">Philosophical Foundations of CS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TECHNICAL SKILLS ── -->
+    <section id="skills" class="reveal">
+      <div class="section-header">
+        <div>
+          <div class="section-label">02 · Skills</div>
+          <div class="section-title">Technical Toolkit</div>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="skills-grid">
+        <div class="skill-block">
+          <div class="skill-block-title">Languages &amp; Frameworks</div>
+          <span class="tag">Java</span>
+          <span class="tag">Python</span>
+          <span class="tag">C++</span>
+          <span class="tag">HTML / CSS</span>
+          <span class="tag blue">React</span>
+          <span class="tag blue">Next.js</span>
+          <span class="tag blue">Node.js</span>
+          <span class="tag blue">Flask</span>
+          <span class="tag blue">Tailwind</span>
+          <span class="tag green">LangChain</span>
+          <span class="tag green">Galaxy-ML</span>
+          <span class="tag green">HeyGen</span>
+          <span class="tag green">Neo4j</span>
+          <span class="tag">Kubernetes</span>
+        </div>
+        <div class="skill-block">
+          <div class="skill-block-title">Developer Tools &amp; Practices</div>
+          <span class="tag blue">VS Code</span>
+          <span class="tag blue">Git / GitHub</span>
+          <span class="tag blue">UNIX</span>
+          <span class="tag green">CI/CD</span>
+          <span class="tag green">Machine Learning</span>
+          <span class="tag green">Docker</span>
+          <span class="tag">AutoGluon</span>
+          <span class="tag">XML / YAML</span>
+          <span class="tag">Conda / Anaconda</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WORK EXPERIENCE ── -->
+    <section id="experience" class="reveal">
+      <div class="section-header">
+        <div>
+          <div class="section-label">03 · Experience</div>
+          <div class="section-title">Work Experience</div>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <!-- CSL -->
+      <div class="card reveal">
+        <div class="card-header">
+          <div class="card-title">Coordinated Science Laboratory</div>
+          <div class="card-date">Dec 2025 – Present</div>
+        </div>
+        <div class="card-loc">Champaign, IL</div>
+        <div class="card-role">Undergraduate Researcher</div>
+        <ul class="bullets">
+          <li>Evaluating <strong>LLM trust calibration &amp; interpretability</strong> against physician diagnoses of prostate cancer through transcript analysis and survey-based research.</li>
+        </ul>
+      </div>
+
+      <!-- Moffitt -->
+      <div class="card green reveal">
+        <div class="card-header">
+          <div class="card-title">Moffitt Cancer Center</div>
+          <div class="card-date">Jun 2025 – Aug 2025</div>
+        </div>
+        <div class="card-loc">Tampa, FL</div>
+        <div class="card-role">Software Engineer</div>
+        <ul class="bullets">
+          <li>Co-authored <strong>GLEAM: A Web-based Platform for Best-Practice Machine Learning</strong>, enhancing accessibility on the Galaxy ML platform for <em>500,000+ registered users</em> by developing modular tools that integrate with Galaxy workflows.</li>
+          <li>Achieved results <strong>within ±0.05 of published performance metrics</strong> by building a predictive model for ICB therapy using Galaxy's Tabular Learner and clinical data.</li>
+          <li>Validated GLEAM Multimodal Learner tool, demonstrating performance across binary, multiclass and regression tasks. Configured XML workflows and integrated <strong>AutoGluon</strong>.</li>
+          <li>One of <em>600 participants</em> in the Galaxy and Bioconductor Community Conference 2025. Work showcased alongside Johns Hopkins, Cleveland Clinic, EuroScience Gateway and others to Galaxy developers nationwide.</li>
+        </ul>
+        <div class="skills-line">
+          <span class="label">Skills</span>
+          <span class="tag green">Galaxy</span><span class="tag green">Docker</span><span class="tag green">Python</span><span class="tag">XML</span><span class="tag">Unix</span><span class="tag">AutoGluon</span><span class="tag blue">GitHub</span>
+        </div>
+      </div>
+
+      <!-- OHSU -->
+      <div class="card blue reveal">
+        <div class="card-header">
+          <div class="card-title">Knight Cancer Research Institute · OHSU</div>
+          <div class="card-date">Jun 2023 – Aug 2023</div>
+        </div>
+        <div class="card-loc">Portland, OR</div>
+        <div class="card-role">High School Research Intern</div>
+        <ul class="bullets">
+          <li>Developed <strong>Ludwig.ai</strong> dependency packages to be installed using conda (Python). Integrated with Galaxy tool to analyze several large biomedical datasets.</li>
+          <li>Published package on <em>Anaconda</em> platform.</li>
+        </ul>
+        <div class="skills-line">
+          <span class="label">Skills</span>
+          <span class="tag blue">Python</span><span class="tag">Conda</span><span class="tag">XML</span><span class="tag">YAML</span><span class="tag green">Galaxy</span><span class="tag blue">GitHub</span><span class="tag">Unix</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PROJECTS ── -->
+    <section id="projects" class="reveal">
+      <div class="section-header">
+        <div>
+          <div class="section-label">04 · Projects</div>
+          <div class="section-title">Featured Projects</div>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <!-- HackIllinois -->
+      <div class="card project reveal">
+        <div class="card-header">
+          <div class="card-title">HackIllinois · (Promo)ximity</div>
+          <div class="card-date">Feb 2026</div>
+        </div>
+        <div class="card-loc">University of Illinois Urbana-Champaign</div>
+        <ul class="bullets">
+          <li>Developed a <strong>real-time discount discovery engine</strong> that surfaces nearby restaurants in Urbana-Champaign using <em>geofencing</em> and integrated Stripe checkout.</li>
+        </ul>
+      </div>
+
+      <!-- Disruption Lab -->
+      <div class="card project reveal">
+        <div class="card-header">
+          <div class="card-title">Disruption Lab · UIUC</div>
+          <div class="card-date">Sep 2024 – Present</div>
+        </div>
+        <div class="card-loc">University of Illinois Urbana-Champaign</div>
+
+        <!-- Engineer Manager -->
+        <div class="sub-role">
+          <div class="sub-role-header">
+            <div class="sub-role-title">Engineer Manager, Student Leadership Team</div>
+            <div class="card-date">Jan 2026 – Present</div>
+          </div>
+          <ul class="bullets">
+            <li>Overseeing operations &amp; development of the Disruption Lab organization at UIUC, including organization-wide events and recruitment for <em>~300 members</em>.</li>
+            <li>Managing <strong>3–4 Tech Lab teams</strong> to deliver client-facing software, coordinating project timelines, architecture decisions, and deployment readiness.</li>
+            <li>Projects: <em>LLM Inference (Distributed Systems)</em>, <em>Avilux (Drone Transportation Technology)</em>, and <em>Gen-Learning / Course Intelligence Platform (full-stack AI + Education)</em>.</li>
+          </ul>
+        </div>
+
+        <!-- Project Manager -->
+        <div class="sub-role">
+          <div class="sub-role-header">
+            <div class="sub-role-title">Project Manager</div>
+            <div class="card-date">Sep 2025 – Dec 2025</div>
+          </div>
+          <ul class="bullets">
+            <li><em>1 of 9 PMs</em> in UIUC Disruption Lab, managing a team of 6 undergraduates to deploy and develop a <strong>CI/CD Project Dependency Graph</strong> application for 30+ employees in Data Science Research Services.</li>
+            <li>Implementing frontend/backend feature enhancements, project refactoring and containerization. Application currently being deployed by client.</li>
+          </ul>
+          <div class="skills-line">
+            <span class="label">Skills</span>
+            <span class="tag blue">React Redux</span><span class="tag blue">Websockets</span><span class="tag">Docker</span><span class="tag">Flask</span><span class="tag blue">React</span><span class="tag green">Neo4j</span><span class="tag">Kubernetes</span><span class="tag blue">Tailwind</span><span class="tag green">Python</span>
+          </div>
+        </div>
+
+        <!-- Software Engineer -->
+        <div class="sub-role">
+          <div class="sub-role-header">
+            <div class="sub-role-title">Software Engineer</div>
+            <div class="card-date">Sep 2024 – May 2025</div>
+          </div>
+          <ul class="bullets">
+            <li><em>1 of 55 Software Engineers</em> in UIUC Disruption Lab.</li>
+            <li>Developed an <strong>AI-powered avatar</strong> offering real-time course assistance/personalized learning for students in AI for Business course at Gies College of Business.</li>
+            <li>Built a <strong>RAG-based application</strong> using LangChain and Python to assist UIUC students in ACCY 301 with course-related questions. Application tested and deployed in the classroom setting.</li>
+          </ul>
+          <div class="skills-line">
+            <span class="label">Skills</span>
+            <span class="tag green">RAG</span><span class="tag green">LangChain</span><span class="tag green">Python</span><span class="tag">HeyGen</span><span class="tag blue">Vite</span><span class="tag blue">TypeScript</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LEADERSHIP ── -->
+    <section id="leadership" class="reveal">
+      <div class="section-header">
+        <div>
+          <div class="section-label">05 · Leadership</div>
+          <div class="section-title">Leadership &amp; Community</div>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="leadership-card reveal">
+        <ul class="bullets">
+          <li>
+            <strong>1 of 18 members</strong> in the Explorations: Collaborations Sub-Committee for UIUC's <em>Women in Computer Science</em> (1,431 students). Speaker for <strong>GenAI Dialogues</strong> with Gies College of Business, presenting insights on ethical use of AI in education with Gies faculty.
+          </li>
+          <li>
+            <strong>Stanford HAI AI + Education Conference</strong> — One of the few high schoolers invited to understand AI's challenges in education from founders of <em>Khan Academy, Zillow, CK12, Digital Promise</em> among others.
+          </li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Built with care · <span>Maansi A. Singh</span> · 2026
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
+      { threshold: 0.08 }
+    );
+    reveals.forEach(el => observer.observe(el));
+
+    // Active nav link highlight
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const navObs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            navLinks.forEach(l => l.style.color = '');
+            const link = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+            if (link) link.style.color = 'var(--purple-lt)';
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    sections.forEach(s => navObs.observe(s));
+  </script>
+</body>
+</html>
